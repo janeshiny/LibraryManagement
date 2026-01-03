@@ -17,6 +17,7 @@ public class Book {
 
     @NotBlank
     @Size(min = 3, max=255)
+    @Column(unique = true)
     private String title;
 
     @NotBlank

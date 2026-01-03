@@ -3,7 +3,8 @@ package com.example.library.service;
 import com.example.library.exception.BookDetailInvalidException;
 import com.example.library.exception.BookNotFoundException;
 import com.example.library.model.Book;
-import com.example.library.model.BookDTO;
+import com.example.library.model.CreateBookDTO;
+import com.example.library.model.UpdateBookDTO;
 import com.example.library.model.GENRE;
 import com.example.library.repository.BookRepository;
 import org.springframework.transaction.annotation.Transactional;
@@ -24,38 +25,39 @@ public class BookService {
     }
 
     @Transactional
-    public void addBook(String title, String author, GENRE genre, Integer year, Integer count){
+    public void addBook(CreateBookDTO createBookDTO){
+        String title= createBookDTO.getTitle();
+        String author= createBookDTO.getAuthor();
+        GENRE genre=createBookDTO.getGenre();
+        Integer count= createBookDTO.getCount();
+        Integer year= createBookDTO.getYear();
         validateBookDetail(title,author,genre,year,count);
         Optional<Book> presentBook = checkBookExistsByAuthorAndTitle(title,author);
         /*  TODO: Change the count implementation later when users are added to account for race conditions */
         presentBook.ifPresentOrElse(
-                book -> {
-                    book.setCount(book.getCount()+1);
-                },
-                ()-> {
-                    bookRepository.save(Book.builder()
-                            .title(title).author(author).genre(genre).count(count).year(year).build());
-                }
+                book -> book.setCount(book.getCount()+1),
+                ()-> bookRepository.save(Book.builder()
+                        .title(title).author(author).genre(genre).count(count).year(year).build())
         );
 
     }
 
     @Transactional
-    public void updateBookDetail(Long id, BookDTO bookDTO){
+    public void updateBookDetail(Long id, UpdateBookDTO updateBookDTO){
         Book book = checkBookExistsByIdOrElseThrow(id);
-        validateBookDTODetail(bookDTO.getAuthor(), bookDTO.getYear(),bookDTO.getCount());
+        validateUpdateBookDTODetail(updateBookDTO.getAuthor(), updateBookDTO.getYear(), updateBookDTO.getCount());
 
-        if(bookDTO.getAuthor()!=null){
-            Optional<Book> checkBook = checkBookExistsByAuthorAndTitle(book.getTitle(),bookDTO.getAuthor());
+        if(updateBookDTO.getAuthor()!=null){
+            Optional<Book> checkBook = checkBookExistsByAuthorAndTitle(book.getTitle(), updateBookDTO.getAuthor());
             checkBook.ifPresent(
                     x->{
                         if(!Objects.equals(x.getId(), book.getId()))
                             throw new BookDetailInvalidException("The updated book details (title+author) are already present in library");}
             );
-            book.setAuthor(bookDTO.getAuthor());}
-        if(bookDTO.getGenre()!=null) book.setGenre(bookDTO.getGenre());
-        if(bookDTO.getYear()!=null) book.setYear(bookDTO.getYear());
-        if(bookDTO.getCount()!=null) book.setCount(bookDTO.getCount());
+            book.setAuthor(updateBookDTO.getAuthor());}
+        if(updateBookDTO.getGenre()!=null) book.setGenre(updateBookDTO.getGenre());
+        if(updateBookDTO.getYear()!=null) book.setYear(updateBookDTO.getYear());
+        if(updateBookDTO.getCount()!=null) book.setCount(updateBookDTO.getCount());
     }
 
     @Transactional(readOnly = true)
@@ -84,7 +86,7 @@ public class BookService {
         bookRepository.deleteById(id);
     }
 
-    private void validateBookDTODetail(String author, Integer year, Integer count){
+    private void validateUpdateBookDTODetail(String author, Integer year, Integer count){
         if(author!=null &&( author.length()<3||author.length()>255)){
             throw new BookDetailInvalidException("Author doesn't meet length requirements");
         }
