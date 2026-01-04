@@ -9,15 +9,15 @@ import lombok.Setter;
 @Getter
 @Setter
 public class CreateBookDTO {
-    @NotBlank
+    @NotBlank(message = "Title should never be blank")
     private String title;
-    @NotBlank
+    @NotBlank(message = "Author should never be blank")
     private String author;
-    @NotNull
+    @NotNull(message = "Genre should never be blank")
     private GENRE genre;
-    @NotNull
+    @NotNull(message = "Count shouldn't be blank and less than 1")
     @Min(value = 1)
     private Integer count;
-    @Min(value = 0)
+    @Min(value = 0, message = "Year should never be less than 0")
     private Integer year;
 }
