@@ -1,9 +1,10 @@
 package com.example.library.controller;
 
 import com.example.library.model.Book;
-import com.example.library.model.CreateBookDTO;
-import com.example.library.model.UpdateBookDTO;
+import com.example.library.model.dto.CreateBookDTO;
+import com.example.library.model.dto.UpdateBookDTO;
 import com.example.library.model.GENRE;
+import com.example.library.model.response.ApiResponse;
 import com.example.library.service.BookService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -39,27 +40,31 @@ public class BookController {
     }
 
     @GetMapping
-    public ResponseEntity<List<Book>> getAllBooks(){
+    public ResponseEntity<ApiResponse<List<Book>>> getAllBooks(){
         List<Book> bookList= bookService.findAllBooks();
-        return new ResponseEntity<>(bookList,HttpStatus.OK);
+        ApiResponse<List<Book>> response= ApiResponse.success(bookList,"Returning all books");
+        return new ResponseEntity<>(response,HttpStatus.OK);
     }
 
     @GetMapping("/author")
-    public ResponseEntity<List<Book>> getBooksByAuthor(@RequestParam String author){
+    public ResponseEntity<ApiResponse<List<Book>>> getBooksByAuthor(@RequestParam String author){
         List<Book> bookList= bookService.findBooksByAuthor(author);
-        return new ResponseEntity<>(bookList,HttpStatus.OK);
+        ApiResponse<List<Book>> response= ApiResponse.success(bookList,"Returning books of author"+author);
+        return new ResponseEntity<>(response,HttpStatus.OK);
     }
 
     @GetMapping("/title")
-    public ResponseEntity<List<Book>> getBooksByTitle(@RequestParam String title){
+    public ResponseEntity<ApiResponse<List<Book>>> getBooksByTitle(@RequestParam String title){
         List<Book> bookList= bookService.findBooksByTitle(title);
-        return new ResponseEntity<>(bookList,HttpStatus.OK);
+        ApiResponse<List<Book>> response= ApiResponse.success(bookList,"Returning books containing "+title);
+        return new ResponseEntity<>(response,HttpStatus.OK);
     }
 
     @GetMapping("/{genre}")
-    public ResponseEntity<List<Book>> getBooksByGenre(@PathVariable GENRE genre){
+    public ResponseEntity<ApiResponse<List<Book>>> getBooksByGenre(@PathVariable GENRE genre){
         List<Book> bookList= bookService.findBooksByGenre(genre);
-        return new ResponseEntity<>(bookList,HttpStatus.OK);
+        ApiResponse<List<Book>> response= ApiResponse.success(bookList,"Returning books of genre: "+genre);
+        return new ResponseEntity<>(response,HttpStatus.OK);
     }
 
 }
