@@ -33,5 +33,6 @@ public class Book {
     private Integer count;
 
     @Min(value = 0)
+    @Column(name = "publish_year")
     private Integer year;
 }

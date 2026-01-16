@@ -27,6 +27,12 @@ public class GlobalExceptionHandler {
         return new ResponseEntity<>(response,HttpStatus.NOT_FOUND);
     }
 
+    @ExceptionHandler(BookAlreadyExistsException.class)
+    public ResponseEntity<ApiResponse<Void>> handleBookAlreadyExistsException(BookAlreadyExistsException exception){
+        ApiResponse<Void> response= ApiResponse.error(null, exception.getMessage());
+        return new ResponseEntity<>(response,HttpStatus.CONFLICT);
+    }
+
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public ResponseEntity<ApiResponse<Map<String,String>>> handleFieldValueException(MethodArgumentNotValidException exception){
         Map<String, String> err = new HashMap<>();
