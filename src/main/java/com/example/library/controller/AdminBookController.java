@@ -1,6 +1,5 @@
 package com.example.library.controller;
 
-import com.example.library.model.Book;
 import com.example.library.model.dto.AdminBookDTO;
 import com.example.library.model.dto.CreateBookDTO;
 import com.example.library.model.dto.UpdateBookDTO;
@@ -11,8 +10,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.Optional;
 
 @RestController
 @RequiredArgsConstructor
