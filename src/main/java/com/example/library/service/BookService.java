@@ -4,9 +4,12 @@ import com.example.library.exception.BookDetailInvalidException;
 import com.example.library.exception.BookNotFoundException;
 import com.example.library.model.Book;
 import com.example.library.model.dto.CreateBookDTO;
+import com.example.library.model.dto.ResponseBookDTO;
 import com.example.library.model.dto.UpdateBookDTO;
 import com.example.library.model.GENRE;
 import com.example.library.repository.BookRepository;
+import com.example.library.utils.BookMapper;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.stereotype.Service;
 
@@ -19,8 +22,10 @@ import java.util.Optional;
 public class BookService {
 
     private final BookRepository bookRepository;
+    private final BookMapper bookMapper;
 
-    public BookService(BookRepository bookRepository){
+    public BookService(BookRepository bookRepository, BookMapper bookMapper){
+        this.bookMapper=bookMapper;
         this.bookRepository=bookRepository;
     }
 
@@ -61,23 +66,23 @@ public class BookService {
     }
 
     @Transactional(readOnly = true)
-    public List<Book> findAllBooks(){
-        return bookRepository.findAll();
+    public List<ResponseBookDTO> findAllBooks(){
+        return bookMapper.toDtoList(bookRepository.findAll());
     }
 
     @Transactional(readOnly = true)
-    public List<Book> findBooksByGenre(GENRE genre){
-        return bookRepository.findByGenre(genre);
+    public List<ResponseBookDTO> findBooksByGenre(GENRE genre){
+        return bookMapper.toDtoList(bookRepository.findByGenre(genre));
     }
 
     @Transactional(readOnly = true)
-    public List<Book> findBooksByAuthor(String author){
-        return bookRepository.findByAuthorContainingIgnoreCase(author);
+    public List<ResponseBookDTO> findBooksByAuthor(String author){
+        return bookMapper.toDtoList(bookRepository.findByAuthorContainingIgnoreCase(author));
     }
 
     @Transactional(readOnly = true)
-    public List<Book> findBooksByTitle(String title){
-        return bookRepository.findByTitleContainingIgnoreCase(title);
+    public List<ResponseBookDTO> findBooksByTitle(String title){
+        return bookMapper.toDtoList(bookRepository.findByTitleContainingIgnoreCase(title));
     }
 
     @Transactional
