@@ -33,6 +33,18 @@ public class GlobalExceptionHandler {
         return new ResponseEntity<>(response,HttpStatus.CONFLICT);
     }
 
+    @ExceptionHandler(PageDetailInvalidException.class)
+    public ResponseEntity<ApiResponse<Void>> handlePageDetailInvalidException(PageDetailInvalidException exception){
+        ApiResponse<Void> response=ApiResponse.error(null, exception.getMessage());
+        return new ResponseEntity<>(response,HttpStatus.BAD_REQUEST);
+    }
+
+    @ExceptionHandler(PageNotFoundException.class)
+    public ResponseEntity<ApiResponse<Void>> handlePageNotFoundException(PageNotFoundException exception){
+        ApiResponse<Void> response=ApiResponse.error(null, exception.getMessage());
+        return new ResponseEntity<>(response,HttpStatus.NOT_FOUND);
+    }
+
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public ResponseEntity<ApiResponse<Map<String,String>>> handleFieldValueException(MethodArgumentNotValidException exception){
         Map<String, String> err = new HashMap<>();

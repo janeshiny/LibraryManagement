@@ -1,5 +1,6 @@
 package com.example.library.model;
 
+import com.example.library.model.types.GENRE;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.*;
 import lombok.*;

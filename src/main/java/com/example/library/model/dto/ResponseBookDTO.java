@@ -1,6 +1,6 @@
 package com.example.library.model.dto;
 
-import com.example.library.model.GENRE;
+import com.example.library.model.types.GENRE;
 import lombok.*;
 
 @Getter

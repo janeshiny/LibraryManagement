@@ -4,7 +4,7 @@ import com.example.library.exception.BookAlreadyExistsException;
 import com.example.library.exception.BookDetailInvalidException;
 import com.example.library.exception.BookNotFoundException;
 import com.example.library.model.Book;
-import com.example.library.model.GENRE;
+import com.example.library.model.types.GENRE;
 import com.example.library.model.dto.AdminBookDTO;
 import com.example.library.model.dto.CreateBookDTO;
 import com.example.library.model.dto.UpdateBookDTO;

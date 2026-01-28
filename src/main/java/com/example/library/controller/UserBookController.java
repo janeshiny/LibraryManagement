@@ -1,6 +1,6 @@
 package com.example.library.controller;
 
-import com.example.library.model.GENRE;
+import com.example.library.model.types.GENRE;
 import com.example.library.model.dto.ResponseBookDTO;
 import com.example.library.model.response.ApiResponse;
 import com.example.library.service.UserBookService;
