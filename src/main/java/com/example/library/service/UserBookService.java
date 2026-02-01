@@ -5,7 +5,6 @@ import com.example.library.exception.PageNotFoundException;
 import com.example.library.model.Book;
 import com.example.library.model.types.GENRE;
 import com.example.library.model.dto.PagedBooksDto;
-import com.example.library.model.dto.ResponseBookDTO;
 import com.example.library.model.types.SORT;
 import com.example.library.repository.BookRepository;
 import com.example.library.utils.BookMapper;
@@ -16,54 +15,66 @@ import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.List;
-
 @Service
 public class UserBookService {
 
     private final BookRepository bookRepository;
     private final BookMapper bookMapper;
 
-    public UserBookService(BookRepository bookRepository, BookMapper bookMapper){
-        this.bookMapper=bookMapper;
-        this.bookRepository=bookRepository;
+    public UserBookService(BookRepository bookRepository, BookMapper bookMapper) {
+        this.bookMapper = bookMapper;
+        this.bookRepository = bookRepository;
     }
 
     @Transactional(readOnly = true)
-    public List<ResponseBookDTO> findAllBooks(){
-        return bookMapper.toDtoList(bookRepository.findAll());
+    public PagedBooksDto findBooks(Integer pageNo, Integer size, SORT sort) {
+        Pageable pageable = commonPageValidation(pageNo,size,sort);
+        Page<Book> page = bookRepository.findAll(pageable);
+        isPageFound(pageNo,page,"");
+        return bookMapper.toPagedBookDto(page);
     }
 
     @Transactional(readOnly = true)
-    public List<ResponseBookDTO> findBooksByGenre(GENRE genre){
-        return bookMapper.toDtoList(bookRepository.findByGenre(genre));
+    public PagedBooksDto findBooksByGenre(Integer pageNo, Integer size, SORT sort, GENRE genre) {
+        Pageable pageable = commonPageValidation(pageNo,size,sort);
+        Page<Book> page = bookRepository.findByGenre(genre,pageable);
+        isPageFound(pageNo,page,"for genre "+genre);
+        return bookMapper.toPagedBookDto(page);
     }
 
     @Transactional(readOnly = true)
-    public List<ResponseBookDTO> findBooksByAuthor(String author){
-        return bookMapper.toDtoList(bookRepository.findByAuthorContainingIgnoreCase(author));
+    public PagedBooksDto findBooksByAuthor(Integer pageNo, Integer size, SORT sort, String author) {
+        Pageable pageable = commonPageValidation(pageNo,size,sort);
+        Page<Book> page = bookRepository.findByAuthorContainingIgnoreCase(author,pageable);
+        isPageFound(pageNo,page,"for author "+author);
+        return bookMapper.toPagedBookDto(page);
     }
 
     @Transactional(readOnly = true)
-    public List<ResponseBookDTO> findBooksByTitle(String title){
-        return bookMapper.toDtoList(bookRepository.findByTitleContainingIgnoreCase(title));
+    public PagedBooksDto findBooksByTitle(Integer pageNo, Integer size, SORT sort, String title) {
+        Pageable pageable = commonPageValidation(pageNo,size,sort);
+        Page<Book> page = bookRepository.findByTitleContainingIgnoreCase(title,pageable);
+        isPageFound(pageNo,page,"for title "+title);
+        return bookMapper.toPagedBookDto(page);
     }
 
-    @Transactional(readOnly = true)
-    public PagedBooksDto findAllBooks1(Integer pageNo, Integer size, SORT sort){
+    private Pageable commonPageValidation(Integer pageNo, Integer size,SORT sort){
         if(size<1 || size>10)
             throw new PageDetailInvalidException("Size cannot be less than 1 or more than 10");
         if(pageNo<0)
             throw new PageDetailInvalidException("Page no cannot be less than 0");
-
-        Sort sortType = sort == SORT.ASC
+        Sort sortType = sort ==SORT.ASC
                 ? Sort.by("title").ascending()
                 : Sort.by("title").descending();
-        Pageable pageable = PageRequest.of(pageNo,size,sortType);
-        Page<Book> page = bookRepository.findAll(pageable);
-        if(pageNo>=page.getTotalPages()){
+        return PageRequest.of(pageNo,size,sortType);
+    }
+
+    private void isPageFound(Integer pageNo, Page<Book> page, String messageSuffix){
+        if( pageNo == 0 && page.getTotalElements() == 0){
+            throw new PageNotFoundException("No Books Found "+messageSuffix);
+        }
+        if (pageNo >= page.getTotalPages()) {
             throw new PageNotFoundException("Page No. exceeds the total pages present");
         }
-        return bookMapper.toPagedBookDto(page);
     }
 }
